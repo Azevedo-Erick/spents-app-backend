@@ -11,13 +11,13 @@ datasource db {
 }
 
 model Person {
-  id        String   @id @default(cuid())
-  name      String
-  email     String
-  password  String
-  transaction     Transaction[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  id          String        @id @default(cuid())
+  name        String
+  email       String
+  password    String
+  transaction Transaction[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now())
 }
 
 model Transaction {
@@ -27,19 +27,18 @@ model Transaction {
   type        Type
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @default(now())
-  pessoaId    String
-  pessoa      Person    @relation(fields: [personId], references: [id])
+  person      Person    @relation(fields: [personId], references: [id])
   personId    String
   Category    Category? @relation(fields: [categoryId], references: [id])
   categoryId  String?
 }
 
 model Category {
-  id        String   @id @default(cuid())
-  name      String
-  transaction     Transaction[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  id          String        @id @default(cuid())
+  name        String
+  transaction Transaction[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now())
 }
 
 enum Type {
