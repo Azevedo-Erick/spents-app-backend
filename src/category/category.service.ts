@@ -1,26 +1,69 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoryService {
+  constructor(private readonly prisma: PrismaService) { }
   create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
+    try {
+
+      return this.prisma.category.create({
+        data: { ...createCategoryDto }
+      });
+    } catch (e) {
+      throw new InternalServerErrorException("Error creating category");
+    }
   }
 
   findAll() {
-    return `This action returns all category`;
+    try {
+      return this.prisma.category.findMany();
+    } catch (e) {
+      throw new InternalServerErrorException("Error finding categories");
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  findOne(id: string) {
+    try {
+
+      return this.prisma.category.findFirst({
+        where: {
+          id: id
+        }
+      })
+    } catch (e) {
+      throw new InternalServerErrorException("Error finding category");
+    }
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  update(id: string, updateCategoryDto: UpdateCategoryDto) {
+    try {
+
+      return this.prisma.category.update({
+        data: {
+          ...updateCategoryDto
+        },
+        where: {
+          id: id
+        }
+      })
+    } catch (e) {
+      throw new InternalServerErrorException("Error updating category");
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  remove(id: string) {
+    try {
+
+      return this.prisma.category.delete({
+        where: {
+          id: id
+        }
+      })
+    } catch (e) {
+      throw new InternalServerErrorException("Error deleting category");
+    }
   }
 }
