@@ -4,9 +4,10 @@ import { CategoryModule } from './category/category.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PrismaService } from './prisma/prisma.service';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [PersonModule, CategoryModule, TransactionModule, PrismaModule],
+  imports: [PersonModule, CategoryModule, TransactionModule, PrismaModule, AuthModule],
   controllers: [],
   providers: [],
 })

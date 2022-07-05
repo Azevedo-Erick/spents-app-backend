@@ -65,4 +65,15 @@ export class PersonService {
       throw new InternalServerErrorException({ message: 'Error removing person' });
     }
   }
+  findByEmail(email:string){
+    try{
+      return this.prisma.person.findFirst({
+        where:{
+          email:email
+        }
+      })
+    }catch(e){
+      return undefined;
+    }
+  }
 }
