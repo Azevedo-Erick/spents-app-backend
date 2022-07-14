@@ -29,7 +29,7 @@ export class PersonService {
 
   findOne(id: string) {
     try {
-      this.prisma.person.findFirst({
+      return this.prisma.person.findFirst({
         where: {
           id: id
         }
@@ -41,7 +41,7 @@ export class PersonService {
 
   update(id: string, updatePersonDto: UpdatePersonDto) {
     try {
-      this.prisma.person.update({
+      return this.prisma.person.update({
         data: {
           ...updatePersonDto
         },
