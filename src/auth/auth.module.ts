@@ -18,7 +18,7 @@ import { LocalStrategy } from './strategies/local.strategy';
     }),
     inject: [ConfigService]
   })],
-  providers: [AuthService,LocalStrategy,JwtStrategy],
+  providers: [AuthService,LocalStrategy,JwtStrategy, ConfigService],
   exports:[AuthService],
 })
 export class AuthModule {}

@@ -13,6 +13,7 @@ export class AuthService {
         if(
             compareSync(password, user.password)
             ){
+                console.log(user)
             return user;
         }
         return null;
