@@ -3,6 +3,8 @@ import { IsNotEmpty, IsNumber } from "class-validator";
 
 export class Transaction implements Prisma.TransactionUncheckedCreateInput{
     id?: string;
+    @IsNotEmpty()
+    title: string;
     @IsNumber()
     value: number;
     description: string;
