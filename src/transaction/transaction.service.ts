@@ -17,6 +17,7 @@ export class TransactionService {
           
           categoryId: createTransactionDto.categoryId,
           personId: createTransactionDto.personId,
+          id: undefined
         }
       })
     }catch(e){

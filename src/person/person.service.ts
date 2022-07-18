@@ -11,7 +11,8 @@ export class PersonService {
     try {
       return this.prisma.person.create({
         data: {
-          ...createPersonDto
+          ...createPersonDto,
+          id: undefined
         }
       })
     } catch (e) {

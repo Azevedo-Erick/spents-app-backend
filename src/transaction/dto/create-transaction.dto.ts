@@ -1,3 +1,5 @@
 import { Transaction } from "../entities/transaction.entity";
 
-export class CreateTransactionDto extends Transaction{}
+export class CreateTransactionDto extends Transaction{
+   
+}

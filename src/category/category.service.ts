@@ -10,7 +10,7 @@ export class CategoryService {
     try {
 
       return this.prisma.category.create({
-        data: { ...createCategoryDto }
+        data: { ...createCategoryDto,  id: undefined}
       });
     } catch (e) {
       throw new InternalServerErrorException("Error creating category");
