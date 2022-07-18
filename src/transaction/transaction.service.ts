@@ -1,15 +1,40 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Type } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 
 @Injectable()
 export class TransactionService {
+  constructor(private readonly prisma: PrismaService) {}
   create(createTransactionDto: CreateTransactionDto) {
-    return 'This action adds a new transaction';
+    try{
+      return this.prisma.transaction.create({
+
+        data: {
+          ...createTransactionDto,
+          type: createTransactionDto.type.toLowerCase() == 'income' ? Type.INCOME : Type.SPENT,
+          
+          categoryId: createTransactionDto.categoryId,
+          personId: createTransactionDto.personId,
+        }
+      })
+    }catch(e){
+      throw new InternalServerErrorException();
+    }
   }
 
   findAll() {
-    return `This action returns all transaction`;
+    try{
+      return this.prisma.transaction.findMany({
+        include:{
+          Category:true
+        }
+      });
+
+    }catch(e){
+      throw new InternalServerErrorException();
+    }
   }
 
   findOne(id: number) {

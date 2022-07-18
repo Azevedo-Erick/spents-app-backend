@@ -19,7 +19,9 @@ export class CategoryService {
 
   findAll() {
     try {
-      return this.prisma.category.findMany();
+      return this.prisma.category.findMany(
+        
+      );
     } catch (e) {
       throw new InternalServerErrorException("Error finding categories");
     }
