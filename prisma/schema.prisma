@@ -23,6 +23,8 @@ model Person {
 model Transaction {
   id          String    @id @default(cuid())
   value       Float
+  data        DateTime
+
   title       String   
   description String
   type        Type
@@ -36,6 +38,7 @@ model Transaction {
 
 model Category {
   id          String        @id @default(cuid())
+  color       String
   name        String
   transaction Transaction[]
   createdAt   DateTime      @default(now())
