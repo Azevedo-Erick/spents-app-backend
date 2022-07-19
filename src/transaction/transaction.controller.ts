@@ -31,4 +31,10 @@ export class TransactionController {
   remove(@Param('id') id: string) {
     return this.transactionService.remove(+id);
   }
+  //Year/Month/Day
+  @Get('after/:date')
+  findBetweenDates(@Param('date') date: string) {
+    return this.transactionService.findBetweenDates(date);
+  }
+
 }

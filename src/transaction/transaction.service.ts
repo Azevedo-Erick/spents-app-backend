@@ -1,8 +1,9 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Type } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { Transaction } from './entities/transaction.entity';
 
 @Injectable()
 export class TransactionService {
@@ -49,4 +50,45 @@ export class TransactionService {
   remove(id: number) {
     return `This action removes a #${id} transaction`;
   }
+
+  async findBetweenDates(date: string) {
+    
+    if(!date || date.length != 10){
+      throw new BadRequestException();
+    }
+    
+    let fromDate;
+    let toDate;
+    try{
+      fromDate = new Date(date);
+    }catch(e){
+      throw new BadRequestException();
+    }
+    toDate = new Date(fromDate.getTime() + 24 * 60 * 60 * 1000);
+    let transactions:Transaction[] ;
+    try{
+      transactions = await this.prisma.transaction.findMany({
+        where:{
+          data: {
+            gte: fromDate,
+            lte: toDate
+          }
+        },
+        orderBy:{
+          data: 'asc'
+        },
+        
+      });
+    }catch(e){
+      throw new InternalServerErrorException();
+    }
+     transactions.map(transaction => {
+      const day =new Date(transaction.data);
+      const weekDay = day.toLocaleDateString('en-US', { weekday: 'long' });
+    }) 
+    transactions.filter(transaction => {})
+    //transactions.reduce((acc, curr) => {}, )
+  }
+
 }
+

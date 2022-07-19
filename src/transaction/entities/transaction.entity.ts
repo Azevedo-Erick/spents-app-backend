@@ -5,6 +5,8 @@ export class Transaction implements Prisma.TransactionUncheckedCreateInput{
     id?: string;
     @IsNotEmpty()
     title: string;
+    @IsNotEmpty()
+    data: string | Date;
     @IsNumber()
     value: number;
     description: string;
