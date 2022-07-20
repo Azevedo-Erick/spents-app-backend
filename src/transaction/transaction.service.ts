@@ -16,10 +16,13 @@ export class TransactionService {
           ...createTransactionDto,
           type: createTransactionDto.type.toLowerCase() == 'income' ? Type.INCOME : Type.SPENT,
           
+          data:new Date(createTransactionDto.data).toISOString(),
           categoryId: createTransactionDto.categoryId,
           personId: createTransactionDto.personId,
           id: undefined
+          
         }
+        
       })
     }catch(e){
       throw new InternalServerErrorException();
@@ -64,7 +67,7 @@ export class TransactionService {
     }catch(e){
       throw new BadRequestException();
     }
-    toDate = new Date(fromDate.getTime() + 24 * 60 * 60 * 1000);
+    toDate = new Date(fromDate.getTime() + 24 * 60 * 60 * 1000 * 6);
     let transactions:Transaction[] ;
     try{
       transactions = await this.prisma.transaction.findMany({
@@ -82,12 +85,46 @@ export class TransactionService {
     }catch(e){
       throw new InternalServerErrorException();
     }
-     transactions.map(transaction => {
-      const day =new Date(transaction.data);
-      const weekDay = day.toLocaleDateString('en-US', { weekday: 'long' });
-    }) 
-    transactions.filter(transaction => {})
-    //transactions.reduce((acc, curr) => {}, )
+    if(!transactions){
+      return [];
+    }
+    let filteredWeekDaySpents = [];
+
+    let weekDays = [];
+    let currentDate:Date = new Date(fromDate.getTime());
+    while(currentDate.getTime() <= toDate.getTime()){
+      weekDays.push(currentDate.toLocaleDateString('en-US', { weekday: 'long' }));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    
+    weekDays.forEach((e)=>{
+      filteredWeekDaySpents.push({"weekDay":e, "values":[]});
+    });
+      
+    currentDate = new Date(fromDate.getTime());
+
+    while(currentDate.getTime() <= toDate.getTime()){
+      transactions.forEach((e)=>{
+        const elementData:Date = new Date(e.data);
+        const currentDateTimeBinary:Date = new Date(currentDate.getTime());
+        if(elementData.getTime() >= currentDateTimeBinary.getTime() && elementData.getTime() <= currentDateTimeBinary.getTime()){
+          filteredWeekDaySpents.forEach((element)=>{
+            if(element.weekDay == currentDate.toLocaleDateString('en-US', { weekday: 'long' })){
+              element.values.push(e);
+            }
+          }
+          );
+        }
+      })
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    return filteredWeekDaySpents;
+      
+   
+    
+
+
+    
   }
 
 }
