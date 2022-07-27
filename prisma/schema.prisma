@@ -23,7 +23,7 @@ model Person {
 model Transaction {
   id          String    @id @default(cuid())
   value       Float
-  data        DateTime
+  date        DateTime
 
   title       String   
   description String

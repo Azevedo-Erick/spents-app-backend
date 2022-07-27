@@ -5,7 +5,7 @@ import { UpdateTransactionDto } from './dto/update-transaction.dto';
 
 @Controller('transaction')
 export class TransactionController {
-  constructor(private readonly transactionService: TransactionService) {}
+  constructor(private readonly transactionService: TransactionService) { }
 
   @Post()
   create(@Body() createTransactionDto: CreateTransactionDto) {
@@ -32,9 +32,20 @@ export class TransactionController {
     return this.transactionService.remove(+id);
   }
   //Year/Month/Day
-  @Get('after/:date')
+  @Get('weekly/:date')
   findBetweenDates(@Param('date') date: string) {
-    return this.transactionService.findBetweenDates(date);
+    return this.transactionService.findWeekly(date);
   }
+  //Year/Month/Day
+  @Get('monthly/:date')
+  findMonthly(@Param('date') date: string) {
+    return this.transactionService.findMonthly(date);
+  }
+  //Year/Month/Day
+  @Get('yearly/:date')
+  findYearly(@Param('date') date: string) {
+    return this.transactionService.findYearly(date);
+  }
+
 
 }

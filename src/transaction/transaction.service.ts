@@ -7,37 +7,37 @@ import { Transaction } from './entities/transaction.entity';
 
 @Injectable()
 export class TransactionService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
   create(createTransactionDto: CreateTransactionDto) {
-    try{
+    try {
       return this.prisma.transaction.create({
 
         data: {
           ...createTransactionDto,
           type: createTransactionDto.type.toLowerCase() == 'income' ? Type.INCOME : Type.SPENT,
-          
-          data:new Date(createTransactionDto.data).toISOString(),
+
+          date: new Date(createTransactionDto.date).toISOString(),
           categoryId: createTransactionDto.categoryId,
           personId: createTransactionDto.personId,
           id: undefined
-          
+
         }
-        
+
       })
-    }catch(e){
+    } catch (e) {
       throw new InternalServerErrorException();
     }
   }
 
   findAll() {
-    try{
+    try {
       return this.prisma.transaction.findMany({
-        include:{
-          Category:true
+        include: {
+          Category: true
         }
       });
 
-    }catch(e){
+    } catch (e) {
       throw new InternalServerErrorException();
     }
   }
@@ -54,62 +54,74 @@ export class TransactionService {
     return `This action removes a #${id} transaction`;
   }
 
-  async findBetweenDates(date: string) {
-    
-    if(!date || date.length != 10){
+  async findWeekly(date: string) {
+    //Validate date
+    if (!date || date.length != 10) {
       throw new BadRequestException();
     }
-    
+
+    //Get first and last day of the week
     let fromDate;
     let toDate;
-    try{
+    try {
       fromDate = new Date(date);
-    }catch(e){
+    } catch (e) {
       throw new BadRequestException();
     }
     toDate = new Date(fromDate.getTime() + 24 * 60 * 60 * 1000 * 6);
-    let transactions:Transaction[] ;
-    try{
+
+    //Get transactions
+    let transactions: Transaction[];
+    try {
       transactions = await this.prisma.transaction.findMany({
-        where:{
-          data: {
+        where: {
+          date: {
             gte: fromDate,
             lte: toDate
           }
         },
-        orderBy:{
-          data: 'asc'
+        orderBy: {
+          date: 'asc'
         },
-        
+
       });
-    }catch(e){
+    } catch (e) {
       throw new InternalServerErrorException();
     }
-    if(!transactions){
+    //If no transactions return empty array
+    if (!transactions) {
       return [];
     }
+
+    //initialize array
     let filteredWeekDaySpents = [];
 
+    //Initialize array with days of the week
     let weekDays = [];
-    let currentDate:Date = new Date(fromDate.getTime());
-    while(currentDate.getTime() <= toDate.getTime()){
+
+    let currentDate: Date = new Date(fromDate.getTime());
+
+    //Fill weekDays array with days of the week
+    while (currentDate.getTime() <= toDate.getTime()) {
       weekDays.push(currentDate.toLocaleDateString('en-US', { weekday: 'long' }));
       currentDate.setDate(currentDate.getDate() + 1);
     }
-    
-    weekDays.forEach((e)=>{
-      filteredWeekDaySpents.push({"weekDay":e, "values":[]});
+
+    //Fill filteredWeekDaySpents array with days of the week and 0 as value
+    weekDays.forEach((e) => {
+      filteredWeekDaySpents.push({ "weekDay": e, "values": [] });
     });
-      
+
     currentDate = new Date(fromDate.getTime());
 
-    while(currentDate.getTime() <= toDate.getTime()){
-      transactions.forEach((e)=>{
-        const elementData:Date = new Date(e.data);
-        const currentDateTimeBinary:Date = new Date(currentDate.getTime());
-        if(elementData.getTime() >= currentDateTimeBinary.getTime() && elementData.getTime() <= currentDateTimeBinary.getTime()){
-          filteredWeekDaySpents.forEach((element)=>{
-            if(element.weekDay == currentDate.toLocaleDateString('en-US', { weekday: 'long' })){
+    //Fill filteredWeekDaySpents array with days of the week and values
+    while (currentDate.getTime() <= toDate.getTime()) {
+      transactions.forEach((e) => {
+        const elementData: Date = new Date(e.date);
+        const currentDateTimeBinary: Date = new Date(currentDate.getTime());
+        if (elementData.getTime() >= currentDateTimeBinary.getTime() && elementData.getTime() <= currentDateTimeBinary.getTime()) {
+          filteredWeekDaySpents.forEach((element) => {
+            if (element.weekDay == currentDate.toLocaleDateString('en-US', { weekday: 'long' })) {
               element.values.push(e);
             }
           }
@@ -119,13 +131,52 @@ export class TransactionService {
       currentDate.setDate(currentDate.getDate() + 1);
     }
     return filteredWeekDaySpents;
-      
-   
-    
-
-
-    
   }
 
+  async findMonthly(date: string) {
+    if (!date || date.length != 10) {
+      throw new BadRequestException();
+    }
+    let fromDate: Date;
+    let toDate;
+    try {
+      fromDate = new Date(date);
+    } catch (e) {
+      throw new BadRequestException();
+    }
+    toDate = new Date(fromDate.getFullYear(), fromDate.getMonth() + 1, 0);
+    let transactions: Transaction[];
+    try {
+      transactions = await this.prisma.transaction.findMany({
+        where: {
+          date: {
+            gte: fromDate,
+            lte: toDate
+          }
+        },
+        orderBy: {
+          date: 'asc'
+        },
+
+      });
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
+    let filteredMonthDaySpents = [];
+    for (let i = 1; i <= toDate.getDate(); i++) {
+      filteredMonthDaySpents.push({ "day": i, "values": [] });
+    }
+    transactions.forEach((e) => {
+      filteredMonthDaySpents[new Date(e.date).getDate()].values.push(e);
+    })
+    return filteredMonthDaySpents;
+  }
+  async findYearly(date: string) {
+    if (!date || date.length != 10) {
+      throw new BadRequestException();
+    }
+    let fromDate;
+    let toDate;
+  }
 }
 

@@ -1,12 +1,12 @@
 import { Prisma, Type } from "@prisma/client";
 import { IsNotEmpty, IsNumber } from "class-validator";
 
-export class Transaction implements Prisma.TransactionUncheckedCreateInput{
+export class Transaction implements Prisma.TransactionUncheckedCreateInput {
     id?: string;
     @IsNotEmpty()
     title: string;
     @IsNotEmpty()
-    data: string | Date;
+    date: string | Date;
     @IsNumber()
     value: number;
     description: string;
