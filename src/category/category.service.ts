@@ -1,4 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Category } from '@prisma/client';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -6,21 +8,29 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 @Injectable()
 export class CategoryService {
   constructor(private readonly prisma: PrismaService) { }
+
   create(createCategoryDto: CreateCategoryDto) {
     try {
-
       return this.prisma.category.create({
-        data: { ...createCategoryDto,  id: undefined}
+
+        data: { ...createCategoryDto },
+
       });
     } catch (e) {
       throw new InternalServerErrorException("Error creating category");
     }
   }
 
-  findAll() {
+  async findAll() {
     try {
-      return this.prisma.category.findMany(
-        
+      const categories: Category[] = await this.prisma.category.findMany({});
+      return instanceToPlain(plainToInstance(
+        CreateCategoryDto,
+        categories,
+        {
+          ignoreDecorators: false
+        },
+      ),
       );
     } catch (e) {
       throw new InternalServerErrorException("Error finding categories");

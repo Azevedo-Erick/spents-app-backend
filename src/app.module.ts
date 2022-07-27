@@ -11,8 +11,8 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [PersonModule, CategoryModule, TransactionModule, PrismaModule, AuthModule,ConfigModule.forRoot()],
+  imports: [PersonModule, CategoryModule, TransactionModule, PrismaModule, AuthModule, ConfigModule.forRoot()],
   controllers: [AppController],
   providers: [JwtService],
 })
-export class AppModule {}
+export class AppModule { }

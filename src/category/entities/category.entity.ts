@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { Exclude } from "class-transformer";
 import { IsHexColor, IsNotEmpty } from "class-validator";
 
 export class Category implements Prisma.CategoryUncheckedCreateInput{
@@ -11,4 +12,6 @@ export class Category implements Prisma.CategoryUncheckedCreateInput{
     transaction?: Prisma.TransactionUncheckedCreateNestedManyWithoutCategoryInput;
     createdAt?: string | Date;
     updatedAt?: string | Date;
+
+   
 }
