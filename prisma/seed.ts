@@ -71,7 +71,8 @@ const seed = async () => {
         console.log("Persons seeded");
 
         let generatedTransactions = []
-        for (let i = 0; i < 1000; i++) {
+
+        for (let i = 0; i < 10000; i++) {
             generatedTransactions.push({
                 id: i.toString(),
                 value: Math.floor(Math.random() * 100),

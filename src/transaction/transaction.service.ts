@@ -112,6 +112,7 @@ export class TransactionService {
       filteredWeekDaySpents.push({ "weekDay": e, "values": [] });
     });
 
+
     currentDate = new Date(fromDate.getTime());
 
     //Fill filteredWeekDaySpents array with days of the week and values

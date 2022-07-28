@@ -34,6 +34,7 @@ export class TransactionController {
   //Year/Month/Day
   @Get('weekly/:date')
   findBetweenDates(@Param('date') date: string) {
+
     return this.transactionService.findWeekly(date);
   }
   //Year/Month/Day
