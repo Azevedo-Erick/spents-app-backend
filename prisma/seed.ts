@@ -1,9 +1,14 @@
 import { PrismaClient } from "@prisma/client";
+import { type } from "os";
+
+const prisma: PrismaClient = new PrismaClient();
+
+prisma.$connect();
+const seed = async () => {
+    try {
 
 
-const seed = async (prisma: PrismaClient) => {
-    prisma.category.createMany({
-        data: [
+        const categories = [
             {
                 'id': '1',
                 name: 'Food',
@@ -30,155 +35,63 @@ const seed = async (prisma: PrismaClient) => {
                 color: '#ff00ff',
             }
         ]
-    })
-    prisma.person.createMany({
-        data: [
+        await prisma.category.createMany({
+            data: categories
+        })
+
+        console.log("Categories seeded");
+
+        const persons = [
             {
                 id: '1',
                 name: 'John Doe',
                 email: 'johndoe@mail.com',
-                password: '123456',
+                password: '$2b$10$nUIoGyUyKNaFTfxCIYcgweGwP1s2V1FPZubKmEXwc0kjYbQy6baT2',
             },
             {
                 id: '2',
                 name: 'Jane Doe',
                 email: 'janedoe@mail.com',
-                password: '123456',
+                password: '$2b$10$nUIoGyUyKNaFTfxCIYcgweGwP1s2V1FPZubKmEXwc0kjYbQy6baT2',
             },
             {
                 id: '3',
                 name: 'Jack Doe',
                 email: 'jackdoe@mail.com',
-                password: '123456',
-            }
-
-        ]
-    })
-    prisma.transaction.createMany({
-        data: [
-            {
-                type: 'INCOME',
-                date: '2020-01-01',
-                title: 'Salary',
-                description: 'Salary',
-                value: 1000,
-                personId: '1',
-                categoryId: '1',
-            },
-            {
-                type: 'SPENT',
-                date: '2020-01-01',
-                title: 'Food',
-                description: 'Food',
-                value: 100,
-                personId: '1',
-                categoryId: '1',
-            },
-            {
-                type: 'INCOME',
-                date: '2020-01-02',
-                title: 'Salary',
-                description: 'Salary',
-                value: 1000,
-                personId: '1',
-                categoryId: '1',
-            },
-            {
-                type: 'SPENT',
-                date: '2020-01-02',
-                title: 'Food',
-                description: 'Food',
-                value: 100,
-                personId: '1',
-                categoryId: '1',
-            },
-            {
-                type: 'INCOME',
-                date: '2020-01-03',
-                title: 'Salary',
-                description: 'Salary',
-                value: 1000,
-                personId: '1',
-                categoryId: '1',
-            },
-            {
-                type: 'SPENT',
-                date: '2020-01-03',
-                title: 'Food',
-                description: 'Food',
-                value: 100,
-                personId: '1',
-                categoryId: '1',
-            },
-            {
-                type: 'INCOME',
-                date: '2020-01-04',
-                title: 'Salary',
-                description: 'Salary',
-                value: 1000,
-                personId: '1',
-                categoryId: '1',
-            },
-            {
-                type: 'SPENT',
-                date: '2020-01-04',
-                title: 'Food',
-                description: 'Food',
-                value: 100,
-                personId: '2',
-                categoryId: '3',
-            },
-            {
-                type: 'INCOME',
-                date: '2020-01-05',
-                title: 'Salary',
-                description: 'Salary',
-                value: 1000,
-                personId: '2',
-                categoryId: '3',
-            },
-            {
-                type: 'SPENT',
-                date: '2020-01-05',
-                title: 'Food',
-                description: 'Food',
-                value: 100,
-                personId: '2',
-                categoryId: '3',
-            },
-            {
-                type: 'INCOME',
-                date: '2020-01-06',
-                title: 'Salary',
-                description: 'Salary',
-                value: 1000,
-                personId: '2',
-                categoryId: '3',
-            },
-            {
-                type: 'SPENT',
-                date: '2020-01-06',
-                title: 'Food',
-                description: 'Food',
-                value: 100,
-                personId: '2',
-                categoryId: '3',
-            },
-            {
-                type: 'INCOME',
-                date: '2020-01-07',
-                title: 'Salary',
-                description: 'Salary',
-                value: 1000,
-                personId: '2',
-                categoryId: '3',
+                password: '$2b$10$nUIoGyUyKNaFTfxCIYcgweGwP1s2V1FPZubKmEXwc0kjYbQy6baT2',
             },
 
+
+
         ]
-    })
-    return await prisma.person.findMany();
+        await prisma.person.createMany({
+            data: persons
+        })
+
+        console.log("Persons seeded");
+
+        let generatedTransactions = []
+        for (let i = 0; i < 1000; i++) {
+            generatedTransactions.push({
+                id: i.toString(),
+                value: Math.floor(Math.random() * 100),
+                categoryId: categories[Math.floor(Math.random() * categories.length)].id,
+                personId: persons[Math.floor(Math.random() * persons.length)].id,
+                date: new Date(Math.floor(Math.random() * 1000000000000)),
+                type: Math.floor(Math.random() * 2) === 0 ? 'INCOME' : 'SPENT',
+                title: 'Transaction ' + i,
+                description: 'Transaction ' + i + ' description',
+            })
+        }
+        await prisma.transaction.createMany({
+            data: generatedTransactions
+        })
+        console.log("Transactions seeded");
+    } catch (error) {
+        console.log(error);
+    } finally {
+        prisma.$disconnect();
+    }
+
 }
-seed(new PrismaClient()).then((e) => {
-    console.log(e);
-    console.log('Seeded')
-})
+seed()
