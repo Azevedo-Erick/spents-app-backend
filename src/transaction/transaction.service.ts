@@ -104,6 +104,7 @@ export class TransactionService {
     //Fill weekDays array with days of the week
     while (currentDate.getTime() <= toDate.getTime()) {
       weekDays.push(currentDate.toLocaleDateString('en-US', { weekday: 'long' }));
+
       currentDate.setDate(currentDate.getDate() + 1);
     }
 
@@ -114,13 +115,23 @@ export class TransactionService {
 
 
     currentDate = new Date(fromDate.getTime());
-
     //Fill filteredWeekDaySpents array with days of the week and values
-    while (currentDate.getTime() <= toDate.getTime()) {
+    filteredWeekDaySpents.forEach((day) => {
+      transactions.forEach((transaction) => {
+        if (new Date(transaction.date).toLocaleDateString('en-US', { weekday: 'long' }) === day.weekDay) {
+          day.values.push(transaction);
+        }
+      })
+    })
+
+
+
+    /* while (currentDate.getTime() <= toDate.getTime()) {
       transactions.forEach((e) => {
         const elementData: Date = new Date(e.date);
         const currentDateTimeBinary: Date = new Date(currentDate.getTime());
         if (elementData.getTime() >= currentDateTimeBinary.getTime() && elementData.getTime() <= currentDateTimeBinary.getTime()) {
+          filteredWeekDaySpents[]
           filteredWeekDaySpents.forEach((element) => {
             if (element.weekDay == currentDate.toLocaleDateString('en-US', { weekday: 'long' })) {
               element.values.push(e);
@@ -130,7 +141,7 @@ export class TransactionService {
         }
       })
       currentDate.setDate(currentDate.getDate() + 1);
-    }
+    } */
     return filteredWeekDaySpents;
   }
 
